@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{DA7A21FA-8162-4350-AD77-A8D1B671F3ED}") = "Kaggle.Bimbo.R", "Kaggle.Bimbo.R\Kaggle.Bimbo.R.rxproj", "{E3585903-0D57-4AE1-99C0-E96CAFB38CEE}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Kaggle.Bimbo.FS", "Kaggle.Bimbo.FS\Kaggle.Bimbo.FS.fsproj", "{A5819B7E-4D54-4713-ABA0-12D5CA25FD26}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{4381CCF0-C78B-4CCF-A989-7780FDFB87A2}"
+	ProjectSection(SolutionItems) = preProject
+		.paket\paket.bootstrapper.exe = .paket\paket.bootstrapper.exe
+		paket.dependencies = paket.dependencies
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A5819B7E-4D54-4713-ABA0-12D5CA25FD26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5819B7E-4D54-4713-ABA0-12D5CA25FD26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5819B7E-4D54-4713-ABA0-12D5CA25FD26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5819B7E-4D54-4713-ABA0-12D5CA25FD26}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
