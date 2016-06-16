@@ -1,13 +1,16 @@
 ﻿
 #r "../packages/FSharp.Data/lib/net40/FSharp.Data.dll"
+#r "../packages/FSharp.Collections.ParallelSeq/lib/net40/FSharp.Collections.ParallelSeq.dll"
 
+open System.IO
 open FSharp.Data
+open FSharp.Collections.ParallelSeq
 
-type Town_State = CsvProvider<"C:/Git/Kaggle.Bimbo/Data/town_state.csv">
-type ClienteTabla = CsvProvider<"C:/Git/Kaggle.Bimbo/Data/cliente_tabla.csv">
-type ProductoTabla = CsvProvider<"C:/Git/Kaggle.Bimbo/Data/producto_tabla.csv">
-type Train = CsvProvider<"C:/Git/Kaggle.Bimbo/Data/train.csv",InferRows=100>
-type Test = CsvProvider<"C:/Git/Kaggle.Bimbo/Data/test.csv",InferRows=100>
+type Town_State = CsvProvider<"F:/Git/Kaggle.Bimbo/Data/town_state.csv">
+type ClienteTabla = CsvProvider<"F:/Git/Kaggle.Bimbo/Data/cliente_tabla.csv">
+type ProductoTabla = CsvProvider<"F:/Git/Kaggle.Bimbo/Data/producto_tabla.csv">
+type Train = CsvProvider<"F:/Git/Kaggle.Bimbo/Data/train.csv",InferRows=100,CacheRows=false>
+type Test = CsvProvider<"F:/Git/Kaggle.Bimbo/Data/test.csv",InferRows=100>
 
 let town_States = Town_State.GetSample().Rows
 let clientes = ClienteTabla.GetSample().Rows
@@ -95,4 +98,13 @@ let firstTrain = trainItems |> Seq.head
 //•Demanda_uni_equil — Adjusted Demand (integer) (This is the target you will predict)
 
 
+#time
+let random = new System.Random()
+let sample = 
+    File.ReadLines(@"F:\Git\Kaggle.Bimbo\Data\train.csv") 
+    |> Seq.filter (fun _ -> random.NextDouble() < 0.005)
+    |> Seq.map(fun r -> Train.Parse(r))
+    |> Seq.length
+
+//Total lines 74180465
 
