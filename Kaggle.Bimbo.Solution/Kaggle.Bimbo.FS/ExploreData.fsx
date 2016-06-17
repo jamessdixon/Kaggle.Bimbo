@@ -1,9 +1,13 @@
 ﻿
 #r "../packages/FSharp.Data/lib/net40/FSharp.Data.dll"
 #r "../packages/FSharp.Collections.ParallelSeq/lib/net40/FSharp.Collections.ParallelSeq.dll"
+#load "../packages/FSharp.Charting/FSharp.Charting.fsx"
 
+open System
 open System.IO
 open FSharp.Data
+open FSharp.Charting
+open System.Collections.Generic
 open FSharp.Collections.ParallelSeq
 
 type Town_State = CsvProvider<"F:/Git/Kaggle.Bimbo/Data/town_state.csv">
@@ -97,14 +101,55 @@ let firstTrain = trainItems |> Seq.head
 //•Dev_proxima — Returns next week (unit: pesos)
 //•Demanda_uni_equil — Adjusted Demand (integer) (This is the target you will predict)
 
-
-#time
-let random = new System.Random()
-let sample = 
-    File.ReadLines(@"F:\Git\Kaggle.Bimbo\Data\train.csv") 
-    |> Seq.filter (fun _ -> random.NextDouble() < 0.005)
-    |> Seq.map(fun r -> Train.Parse(r))
-    |> Seq.length
-
 //Total lines 74180465
 
+#time
+//let random = new System.Random()
+//let sampleString = 
+//    File.ReadLines(@"F:\Git\Kaggle.Bimbo\Data\train.csv") 
+//    |> Seq.filter (fun _ -> random.NextDouble() < 0.005)
+//    
+//let sample = Train.Parse(sampleString)
+
+//    |> Seq.map(fun r -> Train.Parse(r))
+//    |> Seq.toArray
+
+
+
+//OOM
+//let yVariablePlot =
+//    Train.Load(@"F:\Git\Kaggle.Bimbo\Data\train.csv").Rows
+//    |> Seq.map(fun r -> r.Demanda_uni_equil)
+//    |> Chart.FastPoint
+
+
+//OOM
+//let DemandaUniEquil = 
+//    Train.Load(@"F:\Git\Kaggle.Bimbo\Data\train.csv").Rows
+//    |> Seq.groupBy(fun r -> r.Demanda_uni_equil)
+//    |> Seq.map(fun (f,s) -> f,s |> Seq.length)
+//    |> Seq.toArray
+
+
+//let reader = new StreamReader(@"F:\Git\Kaggle.Bimbo\Data\train.csv")
+//let sample = CsvFile.Load(reader)
+//let aggregate = 
+//    sample.Rows 
+//    |> Seq.groupBy(fun r -> r.Columns.[10])
+//    |> Seq.map(fun (f,s) -> f,s |> Seq.length)
+//    |> Seq.toArray
+
+let dictionary = new Dictionary<int, int>()
+let reader = new StreamReader(@"F:\Git\Kaggle.Bimbo\Data\train.csv")
+let mutable row = reader.ReadLine()
+while not(String.IsNullOrEmpty(row)) do
+    row <- reader.ReadLine()
+    let r = Train.ParseRows(row) |> Seq.head
+    let d = r.Demanda_uni_equil
+    match dictionary.ContainsKey(d) with
+    | false -> dictionary.Add(d,1) |> ignore
+    | true -> dictionary.[d] <- dictionary.[d] + 1
+
+dictionary.Count
+            
+//printfn "%i rows" rowLength
