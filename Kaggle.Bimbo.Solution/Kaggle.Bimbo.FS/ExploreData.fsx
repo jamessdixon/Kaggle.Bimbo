@@ -10,11 +10,11 @@ open FSharp.Charting
 open System.Collections.Generic
 open FSharp.Collections.ParallelSeq
 
-type Town_State = CsvProvider<"F:/Git/Kaggle.Bimbo/Data/town_state.csv">
-type ClienteTabla = CsvProvider<"F:/Git/Kaggle.Bimbo/Data/cliente_tabla.csv">
-type ProductoTabla = CsvProvider<"F:/Git/Kaggle.Bimbo/Data/producto_tabla.csv">
-type Train = CsvProvider<"F:/Git/Kaggle.Bimbo/Data/train.csv",InferRows=100,CacheRows=false>
-type Test = CsvProvider<"F:/Git/Kaggle.Bimbo/Data/test.csv",InferRows=100>
+type Town_State = CsvProvider<"C:/Git/Kaggle.Bimbo/Data/town_state.csv">
+type ClienteTabla = CsvProvider<"C:/Git/Kaggle.Bimbo/Data/cliente_tabla.csv">
+type ProductoTabla = CsvProvider<"C:/Git/Kaggle.Bimbo/Data/producto_tabla.csv">
+type Train = CsvProvider<"C:/Git/Kaggle.Bimbo/Data/train.csv",InferRows=100,CacheRows=false>
+type Test = CsvProvider<"C:/Git/Kaggle.Bimbo/Data/test.csv",InferRows=100>
 
 let town_States = Town_State.GetSample().Rows
 let clientes = ClienteTabla.GetSample().Rows
@@ -68,7 +68,23 @@ let firstProduct = productos |> Seq.head
 //foo.Producto_ID
 
 trainItems |> Seq.take(3)
+//•Semana — Week number (From Thursday to Wednesday)
+//•Agencia_ID — Sales Depot ID
+//•Canal_ID — Sales Channel ID
+//•Ruta_SAK — Route ID (Several routes = Sales Depot)
+//•Cliente_ID — Client ID
+//•NombreCliente — Client name
+//•Producto_ID — Product ID
+//•NombreProducto — Product Name
+
+//•Venta_uni_hoy — Sales unit this week (integer)
+//•Venta_hoy — Sales this week (unit: pesos)
+//•Dev_uni_proxima — Returns unit next week (integer)
+//•Dev_proxima — Returns next week (unit: pesos)
+//•Demanda_uni_equil — Adjusted Demand (integer) (This is the target you will predict)
+
 //train 4,2,7,4,7,4,5,4,1,7,4
+
 //3, 1110, 7, 3301, 15766, 1212, 3, 25.14M, 0, 0.0M, 3
 //3, 1110, 7, 3301, 15766, 1216, 4, 33.52M, 0, 0.0M, 4
 //3, 1110, 7, 3301, 15766, 1238, 4, 39.32M, 0, 0.0M, 4
@@ -85,7 +101,17 @@ let firstTrain = trainItems |> Seq.head
 //firstTrain.Venta_hoy
 //firstTrain.Venta_uni_hoy
 
+let firstTest = testItems |> Seq.head
+//(0, 11, 4037, 1, 2209, 4639078, 35305)
 
+//firstTest.Agencia_ID
+//firstTest.Canal_ID
+//firstTest.Cliente_ID
+//firstTest.Id
+//firstTest.Producto_ID
+//firstTest.Ruta_SAK
+//firstTest.Semana
+//
 //Train & Test
 //•Semana — Week number (From Thursday to Wednesday)
 //•Agencia_ID — Sales Depot ID
@@ -103,7 +129,6 @@ let firstTrain = trainItems |> Seq.head
 
 //Total lines 74180465
 
-#time
 //let random = new System.Random()
 //let sampleString = 
 //    File.ReadLines(@"F:\Git\Kaggle.Bimbo\Data\train.csv") 
@@ -113,8 +138,6 @@ let firstTrain = trainItems |> Seq.head
 
 //    |> Seq.map(fun r -> Train.Parse(r))
 //    |> Seq.toArray
-
-
 
 //OOM
 //let yVariablePlot =
@@ -139,17 +162,103 @@ let firstTrain = trainItems |> Seq.head
 //    |> Seq.map(fun (f,s) -> f,s |> Seq.length)
 //    |> Seq.toArray
 
-let dictionary = new Dictionary<int, int>()
-let reader = new StreamReader(@"F:\Git\Kaggle.Bimbo\Data\train.csv")
-let mutable row = reader.ReadLine()
-while not(String.IsNullOrEmpty(row)) do
-    row <- reader.ReadLine()
-    let r = Train.ParseRows(row) |> Seq.head
-    let d = r.Demanda_uni_equil
-    match dictionary.ContainsKey(d) with
-    | false -> dictionary.Add(d,1) |> ignore
-    | true -> dictionary.[d] <- dictionary.[d] + 1
+//#time
+//let dictionary = new System.Collections.Generic.Dictionary<int, int>()
+//let reader = new System.IO.StreamReader(@"C:\Git\Kaggle.Bimbo\Data\train.csv")
+//let mutable row = reader.ReadLine()
+//while not(System.String.IsNullOrEmpty(row)) do
+//    row <- reader.ReadLine()
+//    if row <> null then
+//        let r = row.Split(',')
+//        let d = (int)r.[10]
+//        match dictionary.ContainsKey(d) with
+//        | false -> dictionary.Add(d,1) |> ignore
+//        | true -> dictionary.[d] <- dictionary.[d] + 1
+//
+//
+//dictionary 
+//|> Seq.sortBy(fun kvp -> kvp.Key)
+//|> Seq.map(fun kvp -> kvp.Key, log((float)kvp.Value))
+//|> Chart.FastLine
+//
+//dictionary 
+//|> Seq.sortBy(fun kvp -> kvp.Key)
+//|> Seq.map(fun kvp -> kvp.Key, log((float)kvp.Value))
+//          
+//let getDictionary columnNumber =
+//    let dictionary = new System.Collections.Generic.Dictionary<int, int>()
+//    let reader = new System.IO.StreamReader(@"C:\Git\Kaggle.Bimbo\Data\train.csv")
+//    let mutable row = reader.ReadLine()
+//    while not(System.String.IsNullOrEmpty(row)) do
+//        row <- reader.ReadLine()
+//        if row <> null then
+//            let r = row.Split(',')
+//            let d = (int)r.[columnNumber]
+//            match dictionary.ContainsKey(d) with
+//            | false -> dictionary.Add(d,1) |> ignore
+//            | true -> dictionary.[d] <- dictionary.[d] + 1
+//    dictionary
+//
+//let demandIdDictionary = getDictionary 10
+//
+//let demandMean =
+//    demandIdDictionary
+//    |> Seq.averageBy(fun kvp -> (float)kvp.Value)
+////35476
+//
+//let observationLength =
+//    demandIdDictionary
+//    |> Seq.length
+//
+//let middle = observationLength / 2
+//
+//let demandMedian =
+//    demandIdDictionary
+//    |> Seq.sortBy(fun kvp -> kvp.Value)
+//    |> Seq.toArray
+//
+//demandMedian.[middle]
+//1110
 
-dictionary.Count
-            
-//printfn "%i rows" rowLength
+
+
+//productIdDictionary
+//|> Seq.sortBy(fun kvp -> kvp.Key)
+//|> Seq.map(fun kvp -> kvp.Key, log((float)kvp.Value))
+//|> Chart.FastLine
+
+//let dictionary = new System.Collections.Generic.Dictionary<int, int>()
+//let reader = new System.IO.StreamReader(@"C:\Git\Kaggle.Bimbo\Data\train.csv")
+//let mutable row = reader.ReadLine()
+//let mutable counter = 0
+//let numberOfRecords = 10
+//while counter < numberOfRecords do
+//    row <- reader.ReadLine()
+//    if row <> null then
+//        let r = row.Split(',')
+//        let d = (int)r.[10]
+//        match dictionary.ContainsKey(d) with
+//        | false -> dictionary.Add(d,1) |> ignore
+//        | true -> dictionary.[d] <- dictionary.[d] + 1
+//    counter <- counter + 1
+
+//Train Header
+//Semana,
+//Agencia_ID,
+//Canal_ID,
+//Ruta_SAK,
+//Cliente_ID,
+//Producto_ID,
+//Venta_uni_hoy,
+//Venta_hoy,
+//Dev_uni_proxima,
+//Dev_proxima,
+//Demanda_uni_equil
+
+//Train Data
+//"3,1110,7,3301,15766,1212,3,25.14,0,0.0,3"
+
+let basePath = @"C:\Git\Kaggle.Bimbo\Data\"
+let path = basePath + "test.csv"
+let reader = new System.IO.StreamReader(path)
+let row = reader.ReadLine()

@@ -1,27 +1,53 @@
-﻿#r "../packages/FSharp.Data/lib/net40/FSharp.Data.dll"
+﻿
+let basePath = @"C:\Git\Kaggle.Bimbo\Data\"
 
-open FSharp.Data
-
-type Town_State = CsvProvider<"C:/Git/Kaggle.Bimbo/Data/town_state.csv">
-type ProductoTabla = CsvProvider<"C:/Git/Kaggle.Bimbo/Data/producto_tabla.csv">
-type ClienteTabla = CsvProvider<"C:/Git/Kaggle.Bimbo/Data/cliente_tabla.csv">
-type Train = CsvProvider<"C:/Git/Kaggle.Bimbo/Data/train.csv",InferRows=100>
-type Test = CsvProvider<"C:/Git/Kaggle.Bimbo/Data/test.csv",InferRows=100>
-
-let town_States = Town_State.GetSample().Rows
-let productos = ProductoTabla.GetSample().Rows
-let clientes = ClienteTabla.GetSample().Rows
-let trainItems = Train.GetSample().Rows |> Seq.take(100000)
-let testItems = Test.GetSample().Rows
-
-type TownState = {SalesDepotId:int; TownId:int; TownDesc: string; StateDesc:string}
-
-let TownStates = 
-    town_States 
-    |> Seq.map(fun i -> {SalesDepotId=i.Agencia_ID; TownId=System.Int32.Parse(i.Town.Substring(0,4)); TownDesc=i.Town.Substring(5,i.Town.Length-5); StateDesc=i.State})
-    |> Set.ofSeq
-
+type TownState = {SalesDepotId:int; TownId:int; TownDesc:string; StateDesc:string}
 type Product = {ProductId:int; Brand:string; ShortName:string; Weight:option<float>; Quantity: option<float>}
+type Client = {ClientId:int; ClientDesc:string}
+type TrainItem = {WeekNumber:int; SalesDepotId:int; SalesChannelId: int; SalesRouteId: int; ClientId: int; ProductId: int; 
+                    SalesThisWeek:float; ReturnsNextWeek:float; SalesUnitThisWeek:int; ReturnsUnitNextWeek:int; 
+                    AdjustedDemand:int}
+type TestItem = {Id: int; WeekNumber:int; SalesDepotId:int; SalesChannelId: int; SalesRouteId: int; 
+                    ClientId: int; ProductId: int;}
+
+type RecordAmount =
+| All
+| Top of int
+| Random of float
+
+let getTownStates recordAmount =
+    let list = new System.Collections.Generic.List<TownState>()
+    let addRow (row:string) =
+        let r = row.Split(',')
+        let salesDepotId = (int)r.[0]
+        let townInfo = (string)r.[1]
+        let townId = townInfo.Substring(0,4)
+        let townDesc = townInfo.Substring(5, townInfo.Length-5) 
+        let stateInfo = (string)r.[2] 
+        let townState = {TownState.SalesDepotId = salesDepotId;
+                        TownId = (int)townId;
+                        TownDesc = townDesc;
+                        StateDesc = stateInfo;}
+        list.Add(townState)
+
+    let path = basePath + "town_state.csv"
+    let reader = new System.IO.StreamReader(path)
+    let mutable row = reader.ReadLine()
+    match recordAmount with
+    | All -> 
+        while not(System.String.IsNullOrEmpty(row)) do
+            row <- reader.ReadLine()
+            if row <> null then addRow row
+    | Top value ->
+        for i = 0 to value - 1 do
+            row <- reader.ReadLine()
+            if row <> null then addRow row
+    | Random value ->
+        let random = new System.Random()
+        while not(System.String.IsNullOrEmpty(row)) do
+            row <- reader.ReadLine()
+            if row <> null && (random.NextDouble() < value) then addRow row
+    list 
 
 open System.Text.RegularExpressions
 let createProduct (producto_ID, producto) =
@@ -47,27 +73,152 @@ let createProduct (producto_ID, producto) =
         match quantity.Groups.Count with
         | 2 -> Some ((float)(quantity.Groups.[1]).Value)
         | _ -> None
-    {ProductId = producto_ID; Brand = brand'; ShortName = shortName; Weight = weight'; Quantity = quantity'}
+    {Product.ProductId = producto_ID; Brand = brand'; ShortName = shortName; Weight = weight'; Quantity = quantity'}
 
-let products =
-    productos
-    |> Seq.map(fun p -> createProduct(p.Producto_ID, p.NombreProducto))
-    |> Set.ofSeq
+let getProducts recordAmount =
+    let list = new System.Collections.Generic.List<Product>()
+    let addRow (row:string) =
+        let r = row.Split(',')
+        let productId = (int)r.[0]
+        let productInfo = (string)r.[1]
+        let product = createProduct(productId, productInfo)
+        list.Add(product)
 
-type Client = {ClientId:int; ClientDesc:string}
+    let path = basePath + "producto_tabla.csv"
+    let reader = new System.IO.StreamReader(path)
+    let mutable row = reader.ReadLine()
+    match recordAmount with
+    | All ->
+        while not(System.String.IsNullOrEmpty(row)) do
+            row <- reader.ReadLine()
+            if row <> null then addRow row
+    | Top value ->
+        for i = 0 to value - 1 do
+            row <- reader.ReadLine()
+            if row <> null then addRow row
+    | Random value ->
+        let random = new System.Random()
+        while not(System.String.IsNullOrEmpty(row)) do
+            row <- reader.ReadLine()
+            if row <> null && (random.NextDouble() < value) then addRow row
+    list
 
-let clients = 
-    clientes 
-    |> Seq.map(fun r -> {ClientId = r.Cliente_ID; ClientDesc = r.NombreCliente})
-    |> Set.ofSeq
+let getClients recordAmount =
+    let list = new System.Collections.Generic.List<Client>()
+    let addRow (row:string) =
+        let r = row.Split(',')
+        let client = {Client.ClientId=(int)r.[0]; ClientDesc= (string)r.[1]}
+        list.Add(client)
 
-type Transaction = {WeekNumber:int; SalesDepotId:int; SalesChannelId: int; SalesRouteId: int; ClientId: int; ProductId: int; 
-                    SalesThisWeek:float; ReturnsNextWeek:float; SalesUnitThisWeek:int; ReturnsUnitNextWeek:int; AdjustedDemand:int}
+    let path = basePath + "cliente_tabla.csv"
+    let reader = new System.IO.StreamReader(path)
+    let mutable row = reader.ReadLine()
+    match recordAmount with
+    | All ->
+        while not(System.String.IsNullOrEmpty(row)) do
+            row <- reader.ReadLine()
+            if row <> null then addRow row
+    | Top value ->
+        for i = 0 to value - 1 do
+            row <- reader.ReadLine()
+            if row <> null then addRow row
+    | Random value ->
+        let random = new System.Random()
+        while not(System.String.IsNullOrEmpty(row)) do
+            row <- reader.ReadLine()
+            if row <> null && (random.NextDouble() < value) then addRow row
+    list
 
-let trainTransactions =
-    trainItems
-    |> Seq.take(5000)
-    |> Seq.map(fun i -> {WeekNumber=i.Semana; SalesDepotId = i.Agencia_ID; SalesChannelId = i.Canal_ID; SalesRouteId = i.Ruta_SAK; ClientId = i.Cliente_ID;
-                         ProductId = i.Producto_ID; SalesThisWeek = (float)i.Venta_hoy; ReturnsNextWeek = (float)i.Dev_proxima; SalesUnitThisWeek = i.Venta_uni_hoy;
-                         ReturnsUnitNextWeek = i.Dev_uni_proxima; AdjustedDemand = i.Demanda_uni_equil})
-    |> Set.ofSeq
+let getTrainItems recordAmount =
+    let list = new System.Collections.Generic.List<TrainItem>()
+    let addRow (row:string) =
+        let r = row.Split(',')
+        let trainItem = 
+            {TrainItem.WeekNumber=(int)r.[0];
+            SalesDepotId= (int)r.[1];
+            SalesChannelId= (int)r.[2];
+            SalesRouteId= (int)r.[3];
+            ClientId= (int)r.[4];
+            ProductId= (int)r.[5];
+            SalesUnitThisWeek= (int)r.[6];
+            SalesThisWeek= (float)r.[7];
+            ReturnsUnitNextWeek= (int)r.[8];
+            ReturnsNextWeek= (float)r.[9];
+            AdjustedDemand= (int)r.[10]}
+        list.Add(trainItem)
+
+    let path = basePath + "train.csv"
+    let reader = new System.IO.StreamReader(path)
+    let mutable row = reader.ReadLine()
+    match recordAmount with
+    | All ->
+        while not(System.String.IsNullOrEmpty(row)) do
+            row <- reader.ReadLine()
+            if row <> null then addRow row
+    | Top value ->
+        for i = 0 to value - 1 do
+            row <- reader.ReadLine()
+            if row <> null then addRow row
+    | Random value ->
+        let random = new System.Random()
+        while not(System.String.IsNullOrEmpty(row)) do
+            row <- reader.ReadLine()
+            if row <> null && (random.NextDouble() < value) then addRow row
+    list
+
+let getTestItems recordAmount =
+    let list = new System.Collections.Generic.List<TestItem>()
+    let addRow (row:string) =
+        let r = row.Split(',')
+        let testItem = 
+            {TestItem.Id = (int)r.[0];
+            WeekNumber= (int)r.[1];
+            SalesDepotId= (int)r.[2];
+            SalesChannelId= (int)r.[3]; 
+            SalesRouteId= (int)r.[4];
+            ClientId= (int)r.[5];
+            ProductId= (int)r.[6];}
+        list.Add(testItem)
+
+    let path = basePath + "test.csv"
+    let reader = new System.IO.StreamReader(path)
+    let mutable row = reader.ReadLine()
+    match recordAmount with
+    | All ->
+        while not(System.String.IsNullOrEmpty(row)) do
+            row <- reader.ReadLine()
+            if row <> null then addRow row
+    | Top value ->
+        for i = 0 to value - 1 do
+            row <- reader.ReadLine()
+            if row <> null then addRow row
+    | Random value ->
+        let random = new System.Random()
+        while not(System.String.IsNullOrEmpty(row)) do
+            row <- reader.ReadLine()
+            if row <> null && (random.NextDouble() < value) then addRow row
+    list
+
+#time
+getTownStates(All)
+getTownStates(Random 0.05)
+getTownStates(Top 1)
+
+getProducts All
+getProducts(Random 0.05)
+getProducts(Top 1)
+
+getClients All
+getClients(Random 0.05)
+getClients(Top 1)
+
+getTrainItems All
+getTrainItems(Random 0.05)
+getTrainItems(Top 1)
+
+getTestItems All
+getTestItems (Random 0.05)
+getTestItems (Top 1)
+
+
+
