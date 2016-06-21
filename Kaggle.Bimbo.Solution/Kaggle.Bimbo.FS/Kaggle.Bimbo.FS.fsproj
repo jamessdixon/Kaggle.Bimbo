@@ -44,8 +44,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="IntroScript.fsx" />
-    <None Include="ExploreData.fsx" />
     <None Include="PrepareData.fsx" />
+    <None Include="ExploreData.fsx" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

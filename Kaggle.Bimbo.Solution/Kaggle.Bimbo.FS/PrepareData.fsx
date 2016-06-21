@@ -199,26 +199,3 @@ let getTestItems recordAmount =
             if row <> null && (random.NextDouble() < value) then addRow row
     list
 
-#time
-getTownStates(All)
-getTownStates(Random 0.05)
-getTownStates(Top 1)
-
-getProducts All
-getProducts(Random 0.05)
-getProducts(Top 1)
-
-getClients All
-getClients(Random 0.05)
-getClients(Top 1)
-
-getTrainItems All
-getTrainItems(Random 0.05)
-getTrainItems(Top 1)
-
-getTestItems All
-getTestItems (Random 0.05)
-getTestItems (Top 1)
-
-
-
