@@ -44,9 +44,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="IntroScript.fsx" />
+    <None Include="CommonFunctions.fsx" />
     <None Include="PrepareData.fsx" />
     <None Include="ExploreData.fsx" />
     <None Include="RandomForest.fsx" />
+    <None Include="GLM.fsx" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
