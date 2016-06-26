@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{4381CC
 		paket.dependencies = paket.dependencies
 	EndProjectSection
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Kaggle.Bimbo.Python", "Kaggle.Bimbo.Python\Kaggle.Bimbo.Python.pyproj", "{6D896A45-CAB1-457D-BD73-6F8886CAA814}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,8 @@ Global
 		{A5819B7E-4D54-4713-ABA0-12D5CA25FD26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5819B7E-4D54-4713-ABA0-12D5CA25FD26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5819B7E-4D54-4713-ABA0-12D5CA25FD26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D896A45-CAB1-457D-BD73-6F8886CAA814}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D896A45-CAB1-457D-BD73-6F8886CAA814}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
