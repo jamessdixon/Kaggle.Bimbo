@@ -9,3 +9,4 @@ nuget Accord.Statistics >= 3.0.2
 nuget FSharp.Data >= 2.2.5
 nuget FSharp.Collections.ParallelSeq
 nuget FSharp.Charting
+nuget alglibnet2

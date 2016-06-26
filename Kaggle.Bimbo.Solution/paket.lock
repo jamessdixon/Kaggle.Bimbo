@@ -14,6 +14,7 @@ NUGET
     Accord.Statistics (3.0.2)
       Accord (>= 3.0.2)
       Accord.Math (>= 3.0.2)
+    alglibnet2 (0.0)
     FSharp.Charting (0.90.14)
     FSharp.Collections.ParallelSeq (1.0.2)
     FSharp.Data (2.3)

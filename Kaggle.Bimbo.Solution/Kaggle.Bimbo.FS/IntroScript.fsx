@@ -12,11 +12,11 @@ open Accord.Statistics.Links
 open Accord.Statistics.Models.Regression
 open Accord.Statistics.Models.Regression.Fitting
 
-type TownState = CsvProvider<"C:/Git/Kaggle.Bimbo/Data/town_state.csv">
-type ClienteTabla = CsvProvider<"C:/Git/Kaggle.Bimbo/Data/cliente_tabla.csv">
-type ProductoTabla = CsvProvider<"C:/Git/Kaggle.Bimbo/Data/producto_tabla.csv">
-type Train = CsvProvider<"C:/Git/Kaggle.Bimbo/Data/train.csv",InferRows=100>
-type Test = CsvProvider<"C:/Git/Kaggle.Bimbo/Data/test.csv",InferRows=100>
+type TownState = CsvProvider<"F:/Git/Kaggle.Bimbo/Data/town_state.csv">
+type ClienteTabla = CsvProvider<"F:/Git/Kaggle.Bimbo/Data/cliente_tabla.csv">
+type ProductoTabla = CsvProvider<"F:/Git/Kaggle.Bimbo/Data/producto_tabla.csv">
+type Train = CsvProvider<"F:/Git/Kaggle.Bimbo/Data/train.csv",InferRows=100>
+type Test = CsvProvider<"F:/Git/Kaggle.Bimbo/Data/test.csv",InferRows=100>
 
 let townState = TownState.GetSample().Rows
 let clienteTabla = ClienteTabla.GetSample().Rows

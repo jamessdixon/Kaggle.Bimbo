@@ -46,6 +46,7 @@
     <None Include="IntroScript.fsx" />
     <None Include="PrepareData.fsx" />
     <None Include="ExploreData.fsx" />
+    <None Include="RandomForest.fsx" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
