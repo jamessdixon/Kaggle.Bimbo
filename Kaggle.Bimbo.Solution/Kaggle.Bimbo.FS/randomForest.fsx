@@ -21,5 +21,6 @@ let info, forest, report =
     alglib.dfbuildrandomdecisionforest(xy, numberOfPoints, numberOfVariables,
                                         numberOfClasses,numberOfTrees,r)
 
-
+//OOM if numberOfTrees = 50
+//OutOfIndex exception if numberOfTrees = 2
 
