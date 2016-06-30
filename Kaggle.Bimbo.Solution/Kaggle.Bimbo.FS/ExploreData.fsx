@@ -9,7 +9,7 @@ let clients = PrepareData.getClients all
 let trainItems = PrepareData.getTrainItems (PrepareData.Random 0.05)
 let testItems = PrepareData.getTestItems (PrepareData.Random 0.05)
 
-trainItems 
+trainItems
 |> Seq.distinctBy(fun ti -> ti.WeekNumber)
 |> Seq.map(fun ti -> ti.WeekNumber)
 |> Seq.iter(fun w -> printfn "%i" w)
@@ -24,8 +24,7 @@ let adjustedDemand =
     |> Seq.map(fun ad -> float ad)
     |> Seq.toArray
 
-adjustedDemand
-|> Chart.FastPoint
+adjustedDemand |> Chart.Point
 
 adjustedDemand
 |> Array.average
@@ -63,11 +62,3 @@ let adjustedDemandGrouping =
 
 adjustedDemandGrouping
 |> Chart.FastLine
-
-
-
-
-
-
-
-

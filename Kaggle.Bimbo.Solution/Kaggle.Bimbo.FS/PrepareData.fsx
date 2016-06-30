@@ -1,13 +1,14 @@
 ﻿
-let basePath = @"F:\Git\Kaggle.Bimbo\Data\"
+let basePath = __SOURCE_DIRECTORY__ + @"../../../Data/"
+
 
 type TownState = {SalesDepotId:int; TownId:int; TownDesc:string; StateDesc:string}
 type Product = {ProductId:int; Brand:string; ShortName:string; Weight:option<float>; Quantity: option<float>}
 type Client = {ClientId:int; ClientDesc:string}
-type TrainItem = {WeekNumber:int; SalesDepotId:int; SalesChannelId: int; SalesRouteId: int; ClientId: int; ProductId: int; 
-                    SalesThisWeek:float; ReturnsNextWeek:float; SalesUnitThisWeek:int; ReturnsUnitNextWeek:int; 
+type TrainItem = {WeekNumber:int; SalesDepotId:int; SalesChannelId: int; SalesRouteId: int; ClientId: int; ProductId: int;
+                    SalesThisWeek:float; ReturnsNextWeek:float; SalesUnitThisWeek:int; ReturnsUnitNextWeek:int;
                     AdjustedDemand:int}
-type TestItem = {Id: int; WeekNumber:int; SalesDepotId:int; SalesChannelId: int; SalesRouteId: int; 
+type TestItem = {Id: int; WeekNumber:int; SalesDepotId:int; SalesChannelId: int; SalesRouteId: int;
                     ClientId: int; ProductId: int;}
 
 type RecordAmount =
@@ -22,8 +23,8 @@ let getTownStates recordAmount =
         let salesDepotId = (int)r.[0]
         let townInfo = (string)r.[1]
         let townId = townInfo.Substring(0,4)
-        let townDesc = townInfo.Substring(5, townInfo.Length-5) 
-        let stateInfo = (string)r.[2] 
+        let townDesc = townInfo.Substring(5, townInfo.Length-5)
+        let stateInfo = (string)r.[2]
         let townState = {TownState.SalesDepotId = salesDepotId;
                         TownId = (int)townId;
                         TownDesc = townDesc;
@@ -34,7 +35,7 @@ let getTownStates recordAmount =
     let reader = new System.IO.StreamReader(path)
     let mutable row = reader.ReadLine()
     match recordAmount with
-    | All -> 
+    | All ->
         while not(System.String.IsNullOrEmpty(row)) do
             row <- reader.ReadLine()
             if row <> null then addRow row
@@ -47,7 +48,7 @@ let getTownStates recordAmount =
         while not(System.String.IsNullOrEmpty(row)) do
             row <- reader.ReadLine()
             if row <> null && (random.NextDouble() < value) then addRow row
-    list 
+    list
 
 open System.Text.RegularExpressions
 let createProduct (producto_ID, producto) =
@@ -61,15 +62,15 @@ let createProduct (producto_ID, producto) =
         | _ -> ""
     let weightRegEx = new Regex("(\d+)(Kg|g)")
     let weight = weightRegEx.Match(producto)
-    let weight' = 
+    let weight' =
         match weight.Groups.Count with
         | 3 -> let amount = (float)(weight.Groups.[1]).Value
                let unit = weight.Groups.[2].Value
-               if unit = "Kg" then Some (amount * 100.0) else Some amount 
+               if unit = "Kg" then Some (amount * 100.0) else Some amount
         | _ -> None
     let quantityRegEx = new Regex("(\d+)p ")
     let quantity = quantityRegEx.Match(producto)
-    let quantity' = 
+    let quantity' =
         match quantity.Groups.Count with
         | 2 -> Some ((float)(quantity.Groups.[1]).Value)
         | _ -> None
@@ -133,7 +134,7 @@ let getTrainItems recordAmount =
     let list = new System.Collections.Generic.List<TrainItem>()
     let addRow (row:string) =
         let r = row.Split(',')
-        let trainItem = 
+        let trainItem =
             {TrainItem.WeekNumber=(int)r.[0];
             SalesDepotId= (int)r.[1];
             SalesChannelId= (int)r.[2];
@@ -170,11 +171,11 @@ let getTestItems recordAmount =
     let list = new System.Collections.Generic.List<TestItem>()
     let addRow (row:string) =
         let r = row.Split(',')
-        let testItem = 
+        let testItem =
             {TestItem.Id = (int)r.[0];
             WeekNumber= (int)r.[1];
             SalesDepotId= (int)r.[2];
-            SalesChannelId= (int)r.[3]; 
+            SalesChannelId= (int)r.[3];
             SalesRouteId= (int)r.[4];
             ClientId= (int)r.[5];
             ProductId= (int)r.[6];}
@@ -198,4 +199,3 @@ let getTestItems recordAmount =
             row <- reader.ReadLine()
             if row <> null && (random.NextDouble() < value) then addRow row
     list
-

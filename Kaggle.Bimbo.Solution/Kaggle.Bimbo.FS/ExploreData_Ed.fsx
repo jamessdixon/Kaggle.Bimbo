@@ -1,34 +1,36 @@
 #r "../packages/FSharp.Data/lib/net40/FSharp.Data.dll"
 #r "../packages/FSharp.Collections.ParallelSeq/lib/net40/FSharp.Collections.ParallelSeq.dll"
 
+#r "../packages/RProvider/lib/net40/RProvider.dll"
+#r "../packages/RProvider/lib/net40/RProvider.Runtime.dll"
+#r "../packages/R.NET.Community/lib/net40/RDotNet.dll"
+
+#r "../packages/Deedle/lib/net40/Deedle.dll"
+
 #load "../packages/FSharp.Charting/FSharp.Charting.fsx"
-#load "../packages/RProvider/RProvider.fsx"
+
 
 open System
 open FSharp.Data
 open FSharp.Charting
 open System.Text.RegularExpressions
 open RProvider
+open Deedle
 
-let basePath = @"../../Data/"
+#load "PrepareData.fsx"
 
-type TownState = CsvProvider<"F:/Git/Kaggle.Bimbo/Data/town_state.csv">
-type ClienteTabla = CsvProvider<"F:\Git\Kaggle.Bimbo\Data\cliente_tabla.csv">
-type ProductoTabla = CsvProvider<"F:/Git/Kaggle.Bimbo/Data//producto_tabla.csv">
-type Train = CsvProvider<"F:/Git/Kaggle.Bimbo/Data/train.csv",InferRows=100,CacheRows=false>
-type Test = CsvProvider<"F:/Git/Kaggle.Bimbo/Data/test.csv",InferRows=100>
+#time
+let all = PrepareData.All
+let townState = PrepareData.getTownStates all
+let products = PrepareData.getProducts all
+let clients = PrepareData.getClients all
+let trainItems = PrepareData.getTrainItems (PrepareData.Random 0.05)
+let testItems = PrepareData.getTestItems (PrepareData.Random 0.05)
 
-let clientes = ClienteTabla.GetSample().Rows
-let productos = ProductoTabla.GetSample().Rows
-let trainItems = Train.GetSample().Rows |> Seq.take(100000)
-let testItems = Test.GetSample().Rows
-
-
-let town_States = TownState.Load(basePath + "town_state.csv")
 ///List of States:
 let states =
-    town_States.Rows
-    |> Seq.map(fun ts -> ts.State)
+    townState
+    |> Seq.map(fun ts -> ts.StateDesc)
     |> Seq.sort
     |> Set.ofSeq
 
@@ -38,35 +40,26 @@ let states =
 states |> Set.count // => 33
 states |> Set.map (printfn "%s") // Queretaro in duplicated
 
-///Number of agencia / city
+///Number of agencia / city 
+// => Try to find criterion of importance ?
 let cities =
-    town_States.Rows
+    townState
     |> Seq.take(100)
     |> List.ofSeq
 
-//Get products
-let products = ProductoTabla.Load(basePath + "producto_tabla.csv")
 
-//name + number of pieces + weignt + BRAND + ID
-products.Rows
+//EXPLORE PRODUCTS:
+//name + number of pieces + weight + BRAND + ID
+products
 |> Seq.take(20)
 |> List.ofSeq
 
-//Weigth of Products:
-let weightRegEx = new Regex("(\d+)(Kg|g)")
 
-let weights =
-  products.Rows
-  |> Seq.choose(fun p ->
-      let w = weightRegEx.Match(p.NombreProducto)
-      match w.Groups.Count with
-        | 3 ->
-              let amount = (float)(w.Groups.[1]).Value
-              let unit = w.Groups.[2].Value
-              if unit = "Kg" then Some (amount * 100.0) else Some amount
-        | _ -> None
-    )
-  |> Array.ofSeq
+let weights = 
+    products
+    |> Seq.map(fun p -> p.Weight)
+    |> Seq.choose id
+    |> Array.ofSeq
 
 //Stats
 R.summary( weights ) |> R.print
@@ -74,23 +67,31 @@ R.summary( weights ) |> R.print
 //Histogram of Weights
 Chart.Histogram (weights) //Few products with high weight
 
+//Look at log of weight => Normal Distribution
+let logweights = Array.map log weights
+Chart.Histogram (logweights) //OK close to normal distribution
+
+//Done by Jamie
 let brandRegEx = new Regex("^.+\s(\D+) \d+$")
 let brands =
-    products.Rows
-    |> Seq.map(fun product ->
-          let brand = brandRegEx.Match product.NombreProducto
-          match brand.Groups.Count with
-            | 2 -> brand.Groups.[1].Value
-            | _ -> "")
+    products
+    |> Seq.map(fun p -> p.Brand)
     |> Set.ofSeq
     |> Set.map (printfn "%s")
 
+//Short Name: 
+let short_names =
+    products
+    |> Seq.map(fun p -> p.ShortName, p.Brand)
+    |> Set.ofSeq
+    |> Set.map (fun (name, brand) -> printfn "%40s|%-2s|" name brand)
+
 
 // EXPLORE CUSTOMERS:
-let clients = ClienteTabla.Load(basePath + "cliente_tabla.csv")
+
 //Several duplicate IDs due to mistypping: 4862 !
-clients.Rows
-|> Seq.groupBy ( fun cl -> cl.Cliente_ID)
+clients
+|> Seq.groupBy ( fun cl -> cl.ClientId)
 |> Seq.filter(fun (id, grp) -> grp |> Seq.length > 1)
 |> Seq.length
 
@@ -98,8 +99,8 @@ let multipleSpaceRegex = new Regex(" {2,}")
 let removeMultipleSpaces input = multipleSpaceRegex.Replace(input, " ")
 
 //Check if mistypping is corrected: OK
-clients.Rows
-|> Seq.map(fun cl -> cl.Cliente_ID , removeMultipleSpaces cl.NombreCliente)
+clients
+|> Seq.map(fun cl -> cl.ClientId, removeMultipleSpaces cl.ClientDesc)
 |> Seq.distinctBy snd
 |> Seq.groupBy fst
 |> Seq.filter(fun (id, grp) -> grp |> Seq.length > 1)
@@ -109,11 +110,13 @@ clients.Rows
 //Examine Clients with multiple ID
 // => Restaurant Chains > 100
 // => 1: Non identified : unique person ?
-// => 1 - 10: Family business
+// => 1 - 10: Family business or ?
+// => 10 - 100: ?
 let client_Names =
-    clients.Rows
-    |> Seq.map(fun cl -> cl.Cliente_ID , removeMultipleSpaces cl.NombreCliente)
+    clients
+    |> Seq.map(fun cl -> cl.ClientId , removeMultipleSpaces cl.ClientDesc)
     |> Seq.countBy snd
+    //Skip small clients
     |> Seq.filter(fun (name, cnt) -> cnt > 100)
     |> Seq.sortByDescending snd
     |> Seq.tail
@@ -122,13 +125,57 @@ let client_Names =
 Chart.Histogram (client_Names |> Array.map snd)
 
 //Find Categories of customers by examining data:
-clients.Rows
+clients
 |> Seq.skip(100)
 |> Seq.take(100)
-|> Seq.map(fun cl -> cl.NombreCliente)
+|> Seq.map(fun cl -> cl.ClientDesc)
 |> List.ofSeq
 // Names - Family business
 // FMAXXXXX - Vending Machine?
 // ESCUELA - School
 // Contains : ALIM / MINI / SUPER / BODEGA- Groceries
 // Contains: Cafeteria - Vending machine
+
+//Train Items explorations > Customer demand
+let tot_demand = 
+    trainItems
+    |> Seq.map(fun it -> it.AdjustedDemand)
+    |> Seq.reduce (+)
+
+let nbClients = 
+    trainItems 
+    |> Seq.distinctBy (fun it -> it.ClientId)
+    |> Seq.length
+    //694 449
+
+type ParettoClass = | A | B | C
+
+let paretoGrouping total (trainItems: #seq<PrepareData.TrainItem>) = 
+    trainItems
+    |> Seq.groupBy(fun ti -> ti.ClientId)
+    |> Seq.map(fun (id, records) -> id, records |> Seq.map(fun it -> it.AdjustedDemand) |> Seq.reduce (+) )
+    |> Seq.sortByDescending(fun (id,demand) -> demand)
+    |> Seq.mapFold(fun acc (id, demand) ->  
+                let acc' = float demand + acc
+                let percent = (float demand + acc) / total
+                match percent with
+                    | p when p <= 0.7               -> (A, id, demand), acc'
+                    | p when p > 0.7 && p <= 0.95   -> (B, id, demand), acc'
+                    | _ ->  (C, id, demand), acc'
+                    ) 0.
+    |> fst
+
+//By Customer count
+let groups = paretoGrouping (float tot_demand) trainItems
+
+groups 
+|> Seq.countBy (fun (cl, id, demand) -> cl)
+|> Seq.map(fun (cl, cnt) -> cl, sprintf "%.2f percent" <| (float cnt) / (float nbClients))
+(* Pareto principle: 
+A = 19% of cust = 70% of demand
+B = 40% of cust = 25% of demand
+C = 41% of cust = 5% of demand
+*)
+
+//Should group by Client name -> I need a join with customer table
+//Deedle?
