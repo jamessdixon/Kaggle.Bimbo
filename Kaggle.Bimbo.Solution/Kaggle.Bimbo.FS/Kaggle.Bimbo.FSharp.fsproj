@@ -8,11 +8,11 @@
     <ProjectGuid>a5819b7e-4d54-4713-aba0-12d5ca25fd26</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Kaggle.Bimbo.FS</RootNamespace>
-    <AssemblyName>Kaggle.Bimbo.FS</AssemblyName>
+    <AssemblyName>Kaggle.Bimbo.FSharp</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Name>Kaggle.Bimbo.FS</Name>
+    <Name>Kaggle.Bimbo.FSharp</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -47,6 +47,7 @@
     <None Include="CommonFunctions.fsx" />
     <None Include="PrepareData.fsx" />
     <None Include="ExploreData.fsx" />
+    <None Include="ExploreData_Ed.fsx" />
     <None Include="RandomForest.fsx" />
     <None Include="GLM.fsx" />
   </ItemGroup>

@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{DA7A21FA-8162-4350-AD77-A8D1B671F3ED}") = "Kaggle.Bimbo.R", "Kaggle.Bimbo.R\Kaggle.Bimbo.R.rxproj", "{E3585903-0D57-4AE1-99C0-E96CAFB38CEE}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Kaggle.Bimbo.FS", "Kaggle.Bimbo.FS\Kaggle.Bimbo.FS.fsproj", "{A5819B7E-4D54-4713-ABA0-12D5CA25FD26}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Kaggle.Bimbo.FSharp", "Kaggle.Bimbo.FS\Kaggle.Bimbo.FSharp.fsproj", "{A5819B7E-4D54-4713-ABA0-12D5CA25FD26}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{4381CCF0-C78B-4CCF-A989-7780FDFB87A2}"
 	ProjectSection(SolutionItems) = preProject
