@@ -5,6 +5,7 @@
 #r "../packages/RProvider/lib/net40/RProvider.Runtime.dll"
 #r "../packages/R.NET.Community/lib/net40/RDotNet.dll"
 
+#r "../packages/Deedle/lib/net40/Deedle.dll"
 
 #load "../packages/FSharp.Charting/FSharp.Charting.fsx"
 
@@ -14,6 +15,7 @@ open FSharp.Data
 open FSharp.Charting
 open System.Text.RegularExpressions
 open RProvider
+open Deedle
 
 #load "PrepareData.fsx"
 
@@ -52,6 +54,7 @@ products
 |> Seq.take(20)
 |> List.ofSeq
 
+
 let weights = 
     products
     |> Seq.map(fun p -> p.Weight)
@@ -76,7 +79,12 @@ let brands =
     |> Set.ofSeq
     |> Set.map (printfn "%s")
 
-
+//Short Name: 
+let short_names =
+    products
+    |> Seq.map(fun p -> p.ShortName, p.Brand)
+    |> Set.ofSeq
+    |> Set.map (fun (name, brand) -> printfn "%40s|%-2s|" name brand)
 
 
 // EXPLORE CUSTOMERS:
@@ -127,3 +135,47 @@ clients
 // ESCUELA - School
 // Contains : ALIM / MINI / SUPER / BODEGA- Groceries
 // Contains: Cafeteria - Vending machine
+
+//Train Items explorations > Customer demand
+let tot_demand = 
+    trainItems
+    |> Seq.map(fun it -> it.AdjustedDemand)
+    |> Seq.reduce (+)
+
+let nbClients = 
+    trainItems 
+    |> Seq.distinctBy (fun it -> it.ClientId)
+    |> Seq.length
+    //694 449
+
+type ParettoClass = | A | B | C
+
+let paretoGrouping total (trainItems: #seq<PrepareData.TrainItem>) = 
+    trainItems
+    |> Seq.groupBy(fun ti -> ti.ClientId)
+    |> Seq.map(fun (id, records) -> id, records |> Seq.map(fun it -> it.AdjustedDemand) |> Seq.reduce (+) )
+    |> Seq.sortByDescending(fun (id,demand) -> demand)
+    |> Seq.mapFold(fun acc (id, demand) ->  
+                let acc' = float demand + acc
+                let percent = (float demand + acc) / total
+                match percent with
+                    | p when p <= 0.7               -> (A, id, demand), acc'
+                    | p when p > 0.7 && p <= 0.95   -> (B, id, demand), acc'
+                    | _ ->  (C, id, demand), acc'
+                    ) 0.
+    |> fst
+
+//By Customer count
+let groups = paretoGrouping (float tot_demand) trainItems
+
+groups 
+|> Seq.countBy (fun (cl, id, demand) -> cl)
+|> Seq.map(fun (cl, cnt) -> cl, sprintf "%.2f percent" <| (float cnt) / (float nbClients))
+(* Pareto principle: 
+A = 19% of cust = 70% of demand
+B = 40% of cust = 25% of demand
+C = 41% of cust = 5% of demand
+*)
+
+//Should group by Client name -> I need a join with customer table
+//Deedle?
