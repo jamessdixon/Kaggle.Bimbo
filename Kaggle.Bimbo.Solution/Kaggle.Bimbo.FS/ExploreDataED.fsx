@@ -1,8 +1,8 @@
 #r "../packages/FSharp.Data/lib/net40/FSharp.Data.dll"
 #r "../packages/FSharp.Collections.ParallelSeq/lib/net40/FSharp.Collections.ParallelSeq.dll"
+#r "../packages/RProvider/lib/net40/RProvider.dll"
 
 #load "../packages/FSharp.Charting/FSharp.Charting.fsx"
-#load "../packages/RProvider/RProvider.fsx"
 
 open System
 open FSharp.Data
