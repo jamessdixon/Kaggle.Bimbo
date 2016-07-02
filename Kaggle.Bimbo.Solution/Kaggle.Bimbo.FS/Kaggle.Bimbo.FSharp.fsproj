@@ -48,7 +48,8 @@
     <None Include="CommonFunctions.fsx" />
     <None Include="PrepareData.fsx" />
     <None Include="ExploreData.fsx" />
-    <None Include="ExploreData_Ed.fsx" />
+    <None Include="ExploreData2.fsx" />
+    <None Include="ExploreData_Customer.fsx" />
     <None Include="RandomForest.fsx" />
     <None Include="GLM.fsx" />
   </ItemGroup>
