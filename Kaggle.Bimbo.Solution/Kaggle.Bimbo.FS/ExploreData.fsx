@@ -49,6 +49,7 @@ namedParams dataFrame
 |> R.data_frame
 |> R.plot
 
+
 adjustedDemand
 |> Array.average
 //7.234130686
@@ -106,4 +107,52 @@ trainItems
 trainItems
 |> Seq.distinctBy(fun ti -> ti.ProductId)
 |> Seq.length
+
+
+//crosstab channel with demand
+//trainItems
+//|> Seq.countBy(fun ti -> (float) ti.AdjustedDemand)
+//|> Seq.sortBy(fun (x,y) -> x)
+//
+//let x = adjustedDemand' |> Seq.map(fun (x,y) -> x) |> Seq.toArray
+//let y = adjustedDemand' |> Seq.map(fun (x,y) -> log((float)y)) |> Seq.toArray
+//
+//
+//let dataFrame = 
+//  [ "demand", x;
+//    "count", y ]
+//
+//namedParams dataFrame
+//|> R.data_frame
+//|> R.plot
+
+let salesChannel = trainItems |> Seq.map(fun ti -> (float) ti.SalesChannelId)
+let weekNumber = trainItems |> Seq.map(fun ti -> (float) ti.WeekNumber)
+let adjustedDemand'' = trainItems |> Seq.map(fun ti -> (float) ti.AdjustedDemand)
+
+let df = ["salesChannel",salesChannel;
+          "weekNumber",weekNumber;
+          "demand",adjustedDemand'']
+
+namedParams df
+|> R.data_frame
+|> R.plot
+
+let trainItems' = PrepareData.getTrainItems (PrepareData.Top 100)
+trainItems'.[0]
+trainItems'.[1]
+
+trainItems 
+|> Seq.filter(fun ti -> ti.ReturnsUnitNextWeek > 0)
+
+//Hypothesis
+//direct delivery sales employees have different biases
+//a way to figure out that employee made the estimation
+//Sales Route?
+
+//Certain types of products are harder to estimate
+//If not seen before, take average?
+
+
+
 

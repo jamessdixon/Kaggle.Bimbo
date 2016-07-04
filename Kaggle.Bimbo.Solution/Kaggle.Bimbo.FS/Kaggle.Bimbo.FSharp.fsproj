@@ -52,6 +52,7 @@
     <None Include="ExploreData_Customer.fsx" />
     <None Include="RandomForest.fsx" />
     <None Include="GLM.fsx" />
+    <None Include="Script1.fsx" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
