@@ -1,5 +1,7 @@
 ﻿
 #load "PrepareData.fsx"
+#load "CommonFunctions.fsx"
+
 #r "../packages/alglibnet2/lib/alglibnet2.dll"
 
 #time
@@ -32,7 +34,11 @@ let makePrediction (item:PrepareData.TrainItem) =
     alglib.dforest.dfprocess(forest,x,&predictions)
     predictions.[0]
 
+open CommonFunctions
+
 testItems
-|> Seq.map(fun ti -> float ti.AdjustedDemand, makePrediction ti)
-|> Seq.averageBy(fun (a,p) -> a-p)
+|> Seq.map(fun ti -> {Simulated=makePrediction ti; Observed=ti.AdjustedDemand})
+|> Seq.toArray
+|> RMSLE
+
 
