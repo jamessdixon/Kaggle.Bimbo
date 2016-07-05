@@ -14,17 +14,18 @@ open Accord.Statistics.Models.Regression
 open Accord.Statistics.Models.Regression.Fitting
 
 #time
-let trainItems = PrepareData.getTrainItems (PrepareData.Random 0.01)
+let trainItems = PrepareData.getTrainItems (PrepareData.Random 0.05)
 
 let input = 
     trainItems 
-    |> Seq.map(fun i -> [|float i.SalesDepotId; float i.WeekNumber|]) 
+    |> Seq.map(fun i -> [|i.WeekNumber; i.SalesDepotId; i.SalesChannelId; i.SalesRouteId; i.ClientId; i.ProductId |] |> Array.map float) 
     |> Seq.toArray
 
 let output = 
     trainItems
-    |> Seq.map(fun i -> (float)i.AdjustedDemand) 
+    |> Seq.map(fun i -> i.AdjustedDemand) 
     |> Seq.toArray
+    |> Array.map float
 
 let numberOfClasses = 
     input 
@@ -37,10 +38,10 @@ let mutable delta = 1.0
 while (delta > 0.01) do
     delta <- teacher.Run(input,output)
 
-let testItems = PrepareData.getTrainItems (PrepareData.Random 0.01)
+let testItems = PrepareData.getTrainItems (PrepareData.Random 0.02)
 let testInput = 
     testItems
-    |> Seq.map(fun i -> [|float i.SalesDepotId; float i.WeekNumber|]) 
+    |> Seq.map(fun i -> [|i.WeekNumber; i.SalesDepotId; i.SalesChannelId; i.SalesRouteId; i.ClientId; i.ProductId |] |> Array.map float) 
     |> Seq.toArray
 
 let predicted = 

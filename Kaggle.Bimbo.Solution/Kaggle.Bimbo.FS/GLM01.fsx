@@ -84,7 +84,7 @@ let testOutput =
 
 let rmsle =
     Array.zip predicted testOutput
-    |> Array.map(fun (f,s) -> {Simulated=f;Observed=s})
+    |> Array.map(fun (f,s) -> {Simula ted=f;Observed=s})
     |> RMSLE
    
 //val rmsle : float = 1.23417018
