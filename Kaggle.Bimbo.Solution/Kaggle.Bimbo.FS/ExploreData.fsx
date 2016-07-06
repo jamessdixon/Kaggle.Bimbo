@@ -33,22 +33,28 @@ let adjustedDemand =
 R.summary( adjustedDemand ) |> R.print
 R.plot (adjustedDemand)
 
-let adjustedDemand' =
+let demandGroup =
     trainItems
-    |> Seq.countBy(fun ti -> (float) ti.AdjustedDemand)
+    |> Seq.countBy(fun ti -> ti.AdjustedDemand )
     |> Seq.sortBy(fun (x,y) -> x)
+    |> Seq.toArray
 
-let x = adjustedDemand' |> Seq.map(fun (x,y) -> x) |> Seq.toArray
-let y = adjustedDemand' |> Seq.map(fun (x,y) -> log((float)y)) |> Seq.toArray
+let x = demandGroup |> Seq.map(fun (x,y) -> x) |> Seq.toArray
+let y = demandGroup |> Seq.map(fun (x,y) -> log((float)y)) |> Seq.toArray
 
-let dataFrame = 
-  [ "demand", x;
-    "count", y ]
+//let dataFrame = 
+//  [ "demand", x;
+//    "count", y ]
+//
+//namedParams dataFrame
+//|> R.data_frame
+//|> R.plot
 
-namedParams dataFrame
-|> R.data_frame
-|> R.plot
-
+let outliers = 
+    demandGroup
+    |> Seq.filter(fun (x,y) -> x >= 10)
+    |> Seq.sumBy(fun (x,y) -> y)
+//652902
 
 adjustedDemand
 |> Array.average

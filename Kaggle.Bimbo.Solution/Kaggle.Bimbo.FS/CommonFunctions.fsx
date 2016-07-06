@@ -18,5 +18,12 @@ let RMSLE (results:ExperimentResult[]) =
 
 
 
+let results =
+    [0.0 .. 10.0]
+    |> Seq.iter(fun i -> printfn "%A/1.0: %A: %A" i (RMSE [|{Simulated=i;Observed=1}|]) (RMSLE [|{Simulated=i;Observed=1}|]))
+
+
+
+
 
 

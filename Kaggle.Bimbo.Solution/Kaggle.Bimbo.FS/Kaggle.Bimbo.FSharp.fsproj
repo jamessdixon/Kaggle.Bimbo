@@ -53,6 +53,7 @@
     <None Include="RandomForest.fsx" />
     <None Include="GLM00.fsx" />
     <None Include="GLM01.fsx" />
+    <None Include="NaiveBayes.fsx" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
