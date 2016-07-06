@@ -14,11 +14,13 @@ open Accord.Statistics.Models.Regression
 open Accord.Statistics.Models.Regression.Fitting
 
 #time
-let trainItems = PrepareData.getTrainItems (PrepareData.Random 0.05)
+let trainItems = 
+    PrepareData.getTrainItems (PrepareData.Random 0.05)
+    |> Seq.filter(fun i -> i.AdjustedDemand < 20) 
 
 let input = 
     trainItems 
-    |> Seq.map(fun i -> [|i.WeekNumber; i.SalesDepotId; i.SalesChannelId; i.SalesRouteId; i.ClientId; i.ProductId |] |> Array.map float) 
+    |> Seq.map(fun i -> [|i.WeekNumber; i.SalesDepotId; i.SalesChannelId; i.SalesRouteId; i.ClientId; i.ProductId |] |> Array.map float)
     |> Seq.toArray
 
 let output = 
@@ -32,10 +34,11 @@ let numberOfClasses =
     |> Array.head 
     |> Array.length
 
-let regression = new GeneralizedLinearRegression(new ProbitLinkFunction(), numberOfClasses)
+//new LogitLinkFunction()
+let regression = new GeneralizedLinearRegression(new IdentityLinkFunction(), numberOfClasses)
 let teacher = new IterativeReweightedLeastSquares(regression)
 let mutable delta = 1.0
-while (delta > 0.01) do
+while (delta > 0.001) do
     delta <- teacher.Run(input,output)
 
 let testItems = PrepareData.getTrainItems (PrepareData.Random 0.02)

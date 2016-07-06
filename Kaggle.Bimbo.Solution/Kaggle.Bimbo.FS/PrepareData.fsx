@@ -1,6 +1,6 @@
 ﻿
 //let basePath = __SOURCE_DIRECTORY__ + @"../../../Data/"
-let basePath =  @"F:\Git\Kaggle.Bimbo\Data\"
+let basePath =  @"C:\Git\Kaggle.Bimbo\Data\"
 
 type TownState = {SalesDepotId:int; TownId:int; TownDesc:string; StateDesc:string}
 type Product = {ProductId:int; Brand:string; ShortName:string; Weight:option<float>; Quantity: option<float>}
