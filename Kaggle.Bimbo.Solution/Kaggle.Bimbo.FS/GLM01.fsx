@@ -15,7 +15,9 @@ open Accord.Statistics.Models.Regression
 open Accord.Statistics.Models.Regression.Fitting
 
 #time
-let trainItems = PrepareData.getTrainItems (PrepareData.Random 0.01)
+let trainItems = 
+    PrepareData.getTrainItems (PrepareData.Random 0.05)
+    |> Seq.filter(fun i -> i.AdjustedDemand < 20) 
 
 let startWeek = 
     trainItems 
@@ -43,7 +45,7 @@ let weekNumbers =
 
 let input = 
     trainItems 
-    |> Seq.map(fun i -> createArray i.WeekNumber |> Array.append [|i.SalesDepotId|])
+    |> Seq.map(fun i -> createArray i.WeekNumber |> Array.append [|i.SalesDepotId; i.SalesChannelId; i.SalesRouteId; i.ClientId; i.ProductId |])
     |> Seq.map(fun a -> a |> Array.map float) 
     |> Seq.toArray
 
@@ -58,23 +60,24 @@ let numberOfClasses =
     |> Array.head 
     |> Array.length
 
-let regression = new GeneralizedLinearRegression(new ProbitLinkFunction(), numberOfClasses)
+let regression = new GeneralizedLinearRegression(new IdentityLinkFunction(), numberOfClasses)
 let teacher = new IterativeReweightedLeastSquares(regression)
 let mutable delta = 1.0
-while (delta > 0.01) do
+while (delta > 0.001) do
     delta <- teacher.Run(input,output)
 
 let testItems = PrepareData.getTrainItems (PrepareData.Random 0.01)
 
 let testInput = 
     testItems 
-    |> Seq.map(fun i -> createArray i.WeekNumber |> Array.append [|i.SalesDepotId|])
+    |> Seq.map(fun i -> createArray i.WeekNumber |> Array.append [|i.SalesDepotId; i.SalesChannelId; i.SalesRouteId; i.ClientId; i.ProductId|])
     |> Seq.map(fun a -> a |> Array.map float) 
     |> Seq.toArray
 
 let predicted = 
     testInput 
-    |> Seq.map(fun i -> regression.Compute(i)) 
+    |> Seq.map(fun i -> regression.Compute(i))
+    |> Seq.map(fun i -> if i < 0.0 then 0.0 else i) 
     |> Seq.toArray
 
 let testOutput =
@@ -84,7 +87,7 @@ let testOutput =
 
 let rmsle =
     Array.zip predicted testOutput
-    |> Array.map(fun (f,s) -> {Simula ted=f;Observed=s})
+    |> Array.map(fun (f,s) -> {Simulated=f;Observed=s})
     |> RMSLE
    
 //val rmsle : float = 1.23417018
