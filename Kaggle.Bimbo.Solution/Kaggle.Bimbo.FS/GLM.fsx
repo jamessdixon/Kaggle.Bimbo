@@ -16,11 +16,10 @@ open Accord.Statistics.Models.Regression.Fitting
 #time
 let trainItems = 
     PrepareData.getTrainItems (PrepareData.Random 0.05)
-    |> Seq.filter(fun i -> i.AdjustedDemand < 20) 
 
 let input = 
     trainItems 
-    |> Seq.map(fun i -> [|i.WeekNumber; i.SalesDepotId; i.SalesChannelId; i.SalesRouteId; i.ClientId; i.ProductId |] |> Array.map float)
+    |> Seq.map(fun i -> [|i.WeekNumber;i.SalesDepotId; i.SalesChannelId; i.SalesRouteId; i.ClientId; i.ProductId |] |> Array.map float)
     |> Seq.toArray
 
 let output = 
@@ -44,7 +43,7 @@ while (delta > 0.001) do
 let testItems = PrepareData.getTrainItems (PrepareData.Random 0.02)
 let testInput = 
     testItems
-    |> Seq.map(fun i -> [|i.WeekNumber; i.SalesDepotId; i.SalesChannelId; i.SalesRouteId; i.ClientId; i.ProductId |] |> Array.map float) 
+    |> Seq.map(fun i -> [|i.WeekNumber;i.SalesDepotId; i.SalesChannelId; i.SalesRouteId; i.ClientId; i.ProductId |] |> Array.map float) 
     |> Seq.toArray
 
 let predicted = 

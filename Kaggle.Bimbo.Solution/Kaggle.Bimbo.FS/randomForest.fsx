@@ -15,7 +15,7 @@ let testItems =
 // NOTE: ALGLIB wants prediction variable at end of input array
 let xy =
     trainItems 
-    |> Seq.map(fun ti -> [|ti.WeekNumber; ti.SalesDepotId; ti.ClientId; ti.ProductId; ti.SalesRouteId; ti.AdjustedDemand|] |> Array.map float)   
+    |> Seq.map(fun ti -> [|i.WeekNumber;ti.SalesDepotId; ti.ClientId; ti.ProductId; ti.SalesRouteId; ti.AdjustedDemand|] |> Array.map float)   
     |> array2D
    
 let numberOfPoints = trainItems |> Seq.length
@@ -30,7 +30,7 @@ let report = alglib.dforest.dfreport()
 alglib.dforest.dfbuildrandomdecisionforest(xy, numberOfPoints, numberOfVariables, numberOfClasses,numberOfTrees,r,&info,forest,report)
 
 let makePrediction (item:PrepareData.TrainItem) =
-    let x = item |> fun ti -> [|ti.WeekNumber; ti.SalesDepotId; ti.ClientId; ti.ProductId; ti.SalesRouteId |] |> Array.map float
+    let x = item |> fun ti -> [|i.WeekNumber;ti.SalesDepotId; ti.ClientId; ti.ProductId; ti.SalesRouteId |] |> Array.map float
     let mutable predictions : float[] = [||]
     alglib.dforest.dfprocess(forest,x,&predictions)
     predictions.[0]
