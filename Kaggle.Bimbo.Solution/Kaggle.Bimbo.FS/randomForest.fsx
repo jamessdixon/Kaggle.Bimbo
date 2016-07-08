@@ -30,7 +30,7 @@ let report = alglib.dforest.dfreport()
 alglib.dforest.dfbuildrandomdecisionforest(xy, numberOfPoints, numberOfVariables, numberOfClasses,numberOfTrees,r,&info,forest,report)
 
 let makePrediction (item:PrepareData.TrainItem) =
-    let x = item |> fun ti -> [|i.WeekNumber;ti.SalesDepotId; ti.ClientId; ti.ProductId; ti.SalesRouteId |] |> Array.map float
+    let x = item |> fun ti -> [|ti.WeekNumber;ti.SalesDepotId; ti.ClientId; ti.ProductId; ti.SalesRouteId |] |> Array.map float
     let mutable predictions : float[] = [||]
     alglib.dforest.dfprocess(forest,x,&predictions)
     predictions.[0]

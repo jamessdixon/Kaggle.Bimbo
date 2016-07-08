@@ -18,7 +18,6 @@ open Accord.Statistics.Distributions.Univariate
 let trainItems = 
     PrepareData.getTrainItems (PrepareData.Random 0.02)
 
-
 //i.WeekNumber; 3-9
 //i.SalesDepotId; 1110-25759
 //i.SalesChannelId; 1-11
