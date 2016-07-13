@@ -55,23 +55,22 @@ let runNaiveBayes (trainItems:List<PrepareData.TrainItem>) (holdOutItems:List<Pr
     predicted
 
 
-//In Action
-let trainItems = 
-    PrepareData.getTrainItems (PrepareData.Random 0.02)   
-
-let holdOutItems =
-    PrepareData.getTrainItems (PrepareData.Random 0.01)
-
-let predicted = runNaiveBayes trainItems holdOutItems
-
-let testOutput =
-    holdOutItems
-    |> Seq.map(fun i ->i.AdjustedDemand) 
-    |> Seq.toArray
-    
-let rmsle =
-    Array.zip predicted testOutput
-    |> Array.map(fun (f,s) -> {Simulated=f;Observed=s})
-    |> RMSLE
-rmsle
+//let trainItems = 
+//    PrepareData.getTrainItems (PrepareData.Random 0.02)   
+//
+//let holdOutItems =
+//    PrepareData.getTrainItems (PrepareData.Random 0.01)
+//
+//let predicted = runNaiveBayes trainItems holdOutItems
+//
+//let testOutput =
+//    holdOutItems
+//    |> Seq.map(fun i ->i.AdjustedDemand) 
+//    |> Seq.toArray
+//    
+//let rmsle =
+//    Array.zip predicted testOutput
+//    |> Array.map(fun (f,s) -> {Simulated=f;Observed=s})
+//    |> RMSLE
+//rmsle
     

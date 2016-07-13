@@ -1,11 +1,13 @@
 ﻿
-#load "PrepareData.fsx"
 #load "CommonFunctions.fsx"
+#load "PrepareData.fsx"
 #load "RandomForest.fsx"
 #load "GLM.fsx"
 #load "NaiveBayes.fsx"
 #load "NeuralNetwork.fsx"
 
+open CommonFunctions
+open PrepareData
 open RandomForest
 open GLM
 open NaiveBayes
@@ -18,10 +20,10 @@ let trainItems =
 let holdOutItems =
     PrepareData.getTrainItems (PrepareData.Random 0.01)
 
-let randomForestScore = runRandomForest trainItems holdOutItems
-let glmScore = runNeuralNetwork trainItems holdOutItems
-let naiveBayesScore = runNaiveBayes trainItems holdOutItems
-let neuralNetworkScore = runNeuralNetwork trainItems holdOutItems
+let randomForest = RandomForest.runRandomForest trainItems holdOutItems
+let glm = GLM.runGLM trainItems holdOutItems
+let naiveBayes = NaiveBayes.runNaiveBayes trainItems holdOutItems
+let neuralNetwork = NeuralNetwork.runNeuralNetwork trainItems holdOutItems
 
 
 

@@ -35,20 +35,20 @@ let runRandomForest (trainItems:List<PrepareData.TrainItem>) (holdOutItems:List<
     |> Seq.toArray
 
 
-let trainItems = 
-    PrepareData.getTrainItems (PrepareData.Random 0.02)   
-
-let holdOutItems =
-    PrepareData.getTrainItems (PrepareData.Random 0.01)
-
-let predicted = runRandomForest trainItems holdOutItems
-
-let rmsle = 
-    Seq.zip holdOutItems predicted
-    |> Seq.map(fun (ho,p) -> {Simulated=p; Observed=ho.AdjustedDemand})
-    |> Seq.toArray
-    |> RMSLE
-rmsle
+//let trainItems = 
+//    PrepareData.getTrainItems (PrepareData.Random 0.02)   
+//
+//let holdOutItems =
+//    PrepareData.getTrainItems (PrepareData.Random 0.01)
+//
+//let predicted = runRandomForest trainItems holdOutItems
+//
+//let rmsle = 
+//    Seq.zip holdOutItems predicted
+//    |> Seq.map(fun (ho,p) -> {Simulated=p; Observed=ho.AdjustedDemand})
+//    |> Seq.toArray
+//    |> RMSLE
+//rmsle
 
 
 //printfn "rmsError %A, oobError %A rmsle %A" report.rmserror report.oobrmserror rmsle

@@ -56,21 +56,21 @@ let runNeuralNetwork (trainItems:List<PrepareData.TrainItem>) (holdOutItems:List
     |> Seq.map(fun hoi -> makePrediction hoi)
     |> Seq.toArray
 
-let trainItems = 
-    PrepareData.getTrainItems (PrepareData.Random 0.02)   
-
-let holdOutItems =
-    PrepareData.getTrainItems (PrepareData.Random 0.01)
-
-let predicted = runNeuralNetwork trainItems holdOutItems
-
-let rmsle = 
-    Seq.zip predicted holdOutItems
-    |> Seq.map(fun (p,hoi) -> {Simulated=p; Observed=hoi.AdjustedDemand})
-    |> Seq.toArray
-    |> RMSLE
-rmsle
-
+//let trainItems = 
+//    PrepareData.getTrainItems (PrepareData.Random 0.02)   
+//
+//let holdOutItems =
+//    PrepareData.getTrainItems (PrepareData.Random 0.01)
+//
+//let predicted = runNeuralNetwork trainItems holdOutItems
+//
+//let rmsle = 
+//    Seq.zip predicted holdOutItems
+//    |> Seq.map(fun (p,hoi) -> {Simulated=p; Observed=hoi.AdjustedDemand})
+//    |> Seq.toArray
+//    |> RMSLE
+//rmsle
+//
 
 
 
