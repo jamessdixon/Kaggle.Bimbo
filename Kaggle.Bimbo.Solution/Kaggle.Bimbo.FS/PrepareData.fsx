@@ -48,7 +48,7 @@ let getTownStates recordAmount =
         while not(System.String.IsNullOrEmpty(row)) do
             row <- reader.ReadLine()
             if row <> null && (random.NextDouble() < value) then addRow row
-    list
+    list |> List.ofSeq
 
 open System.Text.RegularExpressions
 let createProduct (producto_ID, producto) =
@@ -102,7 +102,7 @@ let getProducts recordAmount =
         while not(System.String.IsNullOrEmpty(row)) do
             row <- reader.ReadLine()
             if row <> null && (random.NextDouble() < value) then addRow row
-    list
+    list |> List.ofSeq
 
 let getClients recordAmount =
     let list = new System.Collections.Generic.List<Client>()
@@ -128,7 +128,7 @@ let getClients recordAmount =
         while not(System.String.IsNullOrEmpty(row)) do
             row <- reader.ReadLine()
             if row <> null && (random.NextDouble() < value) then addRow row
-    list
+    list |> List.ofSeq
 
 let getTrainItems recordAmount =
     let list = new System.Collections.Generic.List<TrainItem>()
@@ -165,7 +165,7 @@ let getTrainItems recordAmount =
         while not(System.String.IsNullOrEmpty(row)) do
             row <- reader.ReadLine()
             if row <> null && (random.NextDouble() < value) then addRow row
-    list
+    list |> List.ofSeq
 
 let getTestItems recordAmount =
     let list = new System.Collections.Generic.List<TestItem>()
@@ -198,4 +198,4 @@ let getTestItems recordAmount =
         while not(System.String.IsNullOrEmpty(row)) do
             row <- reader.ReadLine()
             if row <> null && (random.NextDouble() < value) then addRow row
-    list
+    list |> List.ofSeq

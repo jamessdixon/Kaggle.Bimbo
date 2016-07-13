@@ -54,6 +54,7 @@
     <None Include="GLM.fsx" />
     <None Include="NaiveBayes.fsx" />
     <None Include="NeuralNetwork.fsx" />
+    <None Include="Ensamble.Average.fsx" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
