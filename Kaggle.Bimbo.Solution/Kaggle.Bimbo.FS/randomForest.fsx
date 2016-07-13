@@ -30,21 +30,25 @@ let runRandomForest (trainItems:List<PrepareData.TrainItem>) (holdOutItems:List<
         alglib.dforest.dfprocess(forest,x,&predictions)
         predictions.[0]
 
-    let rmsle = 
-        holdOutItems
-        |> Seq.map(fun ti -> {Simulated=makePrediction ti; Observed=ti.AdjustedDemand})
-        |> Seq.toArray
-        |> RMSLE
+    holdOutItems
+    |> Seq.map(fun ti -> makePrediction ti)
+    |> Seq.toArray
 
-    rmsle
 
 let trainItems = 
     PrepareData.getTrainItems (PrepareData.Random 0.02)   
 
-let testItems =
+let holdOutItems =
     PrepareData.getTrainItems (PrepareData.Random 0.01)
 
-runRandomForest trainItems testItems
+let predicted = runRandomForest trainItems holdOutItems
+
+let rmsle = 
+    Seq.zip holdOutItems predicted
+    |> Seq.map(fun (ho,p) -> {Simulated=p; Observed=ho.AdjustedDemand})
+    |> Seq.toArray
+    |> RMSLE
+rmsle
 
 
 //printfn "rmsError %A, oobError %A rmsle %A" report.rmserror report.oobrmserror rmsle

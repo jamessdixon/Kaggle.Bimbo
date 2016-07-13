@@ -47,27 +47,29 @@ let runNeuralNetwork (trainItems:List<PrepareData.TrainItem>) (holdOutItems:List
     |> Seq.map(fun _ -> teacher.RunEpoch(input, outputs))
     |> ignore
 
-
     let makePrediction (item:PrepareData.TrainItem) =
         let x = item |> fun ti -> [|ti.WeekNumber; ti.SalesDepotId; ti.SalesChannelId; ti.SalesRouteId; ti.ClientId; ti.ProductId |] |> Array.map float
         network.Compute(x)
         |> Array.head
 
-    let rmsle = 
-        holdOutItems
-        |> Seq.map(fun ti -> {Simulated=makePrediction ti; Observed=ti.AdjustedDemand})
-        |> Seq.toArray
-        |> RMSLE
-    rmsle
+    holdOutItems
+    |> Seq.map(fun hoi -> makePrediction hoi)
+    |> Seq.toArray
 
 let trainItems = 
     PrepareData.getTrainItems (PrepareData.Random 0.02)   
 
-let testItems =
+let holdOutItems =
     PrepareData.getTrainItems (PrepareData.Random 0.01)
 
-runNeuralNetwork trainItems testItems
+let predicted = runNeuralNetwork trainItems holdOutItems
 
+let rmsle = 
+    Seq.zip predicted holdOutItems
+    |> Seq.map(fun (p,hoi) -> {Simulated=p; Observed=hoi.AdjustedDemand})
+    |> Seq.toArray
+    |> RMSLE
+rmsle
 
 
 

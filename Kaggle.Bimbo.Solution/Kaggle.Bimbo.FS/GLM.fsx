@@ -47,24 +47,26 @@ let runGLM (trainItems:List<PrepareData.TrainItem>) (holdOutItems:List<PrepareDa
         |> Seq.map(fun i -> regression.Compute(i)) 
         |> Seq.toArray
 
-    let testOutput =
-        holdOutItems
-        |> Seq.map(fun i ->i.AdjustedDemand) 
-        |> Seq.toArray
-
-    let rmsle =
-        Array.zip predicted testOutput
-        |> Array.map(fun (f,s) -> {Simulated=f;Observed=s})
-        |> RMSLE
-    rmsle
-       
+    predicted       
 
 let trainItems = 
     PrepareData.getTrainItems (PrepareData.Random 0.02)   
 
-let testItems =
+let holdOutItems =
     PrepareData.getTrainItems (PrepareData.Random 0.01)
 
-runGLM trainItems testItems
+let predicted = runGLM trainItems holdOutItems
+
+let testOutput =
+    holdOutItems
+    |> Seq.map(fun i ->i.AdjustedDemand) 
+    |> Seq.toArray
+
+let rmsle =
+    Array.zip predicted testOutput
+    |> Array.map(fun (f,s) -> {Simulated=f;Observed=s})
+    |> RMSLE
+rmsle
+
 
 //val rmsle : float = 1.234622652
