@@ -64,7 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="IntroScript.fsx" />
-    <Compile Include="CommonFunctions.fs" />
+    <Compile Include="Common.fs" />
     <Compile Include="PrepareData.fs" />
     <None Include="ExploreData.fsx" />
     <None Include="ExploreData2.fsx" />
@@ -73,7 +73,10 @@
     <Compile Include="GLM.fs" />
     <Compile Include="NaiveBayes.fs" />
     <Compile Include="NeuralNetwork.fs" />
+    <None Include="RandomForestRunner.fsx" />
+    <None Include="GlmRunner.fsx" />
     <None Include="Ensamble.Average.fsx" />
+    <None Include="EnsambleStacking.fsx" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

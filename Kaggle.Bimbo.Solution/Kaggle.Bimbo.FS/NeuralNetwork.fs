@@ -7,13 +7,13 @@ module NeuralNetwork =
     open Accord.Math
     open AForge.Neuro
     open Accord.Neuro
-    open CommonFunctions
+    open Common
     open Accord.Neuro.Learning
     open Accord.Statistics.Distributions
     open Accord.Statistics.Distributions.Fitting
     open Accord.Statistics.Distributions.Univariate
 
-    let runNeuralNetwork (trainItems:List<PrepareData.TrainItem>) (holdOutItems:List<PrepareData.TrainItem>) =
+    let run (trainItems:List<PrepareData.TrainItem>) (holdOutItems:List<PrepareData.TrainItem>) =
 
         let input = 
             trainItems 

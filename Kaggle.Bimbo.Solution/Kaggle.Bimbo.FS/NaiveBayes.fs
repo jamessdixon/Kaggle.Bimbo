@@ -4,7 +4,7 @@ namespace Kaggle.Bimbo
 module NaiveBayes = 
     open Accord
     open Accord.Math
-    open CommonFunctions
+    open Common
     open Accord.MachineLearning.Bayes
     open Accord.Statistics.Distributions
     open Accord.Statistics.Distributions.Fitting
@@ -17,7 +17,7 @@ module NaiveBayes =
     //i.ClientId; 26-2015152015
     //i.ProductId; 41-49996
 
-    let runNaiveBayes (trainItems:List<PrepareData.TrainItem>) (holdOutItems:List<PrepareData.TrainItem>) =
+    let run (trainItems:List<PrepareData.TrainItem>) (holdOutItems:List<PrepareData.TrainItem>) =
         let trainInput = 
             trainItems 
             |> Seq.map(fun i -> [|i.WeekNumber; i.SalesDepotId; i.SalesChannelId; i.SalesRouteId; i.ClientId; i.ProductId |] |> Array.map float)

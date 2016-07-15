@@ -4,46 +4,40 @@
 #r "../packages/Accord.Math/lib/net40/Accord.Math.dll" 
 #r "../packages/Accord.Statistics/lib/net40/Accord.Statistics.dll" 
 #r "../packages/Accord.MachineLearning/lib/net40/Accord.MachineLearning.dll" 
-#r "../packages/Accord.Neuro/lib/net40/Accord.Neuro.dll" 
 
-#load "CommonFunctions.fs"
+#load "Common.fs"
 #load "PrepareData.fs"
 #load "RandomForest.fs"
 #load "GLM.fs"
-#load "NaiveBayes.fs"
-#load "NeuralNetwork.fs"
 
 open Kaggle.Bimbo
 
 #time
-let trainItems = 
-    PrepareData.getTrainItems (PrepareData.Random 0.02)   
+let randomForestTrainItems = 
+    PrepareData.getTrainItems (PrepareData.Random {Percent=0.02;SeedValue=86})   
+
+let glmTrainItems = 
+    PrepareData.getTrainItems (PrepareData.Random {Percent=0.02;SeedValue=75})   
 
 let holdOutItems =
-    PrepareData.getTrainItems (PrepareData.Random 0.01)
+    PrepareData.getTrainItems (PrepareData.Random {Percent=0.01;SeedValue=30})
 
-let randomForest = RandomForest.runRandomForest trainItems holdOutItems
-let glm = GLM.runGLM trainItems holdOutItems
-let naiveBayes = NaiveBayes.runNaiveBayes trainItems holdOutItems
-let neuralNetwork = NeuralNetwork.runNeuralNetwork trainItems holdOutItems
-
-type Ensamble = {Observed:int; RandomForest:float;GLM:float; NaiveBayes:float; NeuralNetwork:float}
+let randomForest = RandomForest.run randomForestTrainItems holdOutItems
+let glm = GLM.run glmTrainItems holdOutItems
 
 let ensambles =
     holdOutItems
     |> Seq.mapi(fun i hoi -> 
-            {Observed=hoi.AdjustedDemand;
-             RandomForest=randomForest.[i];
-             GLM=glm.[i];
-             NaiveBayes=naiveBayes.[i];
-             NeuralNetwork=neuralNetwork.[i]})
+            {Common.LimitedEnsamble.Observed=hoi.AdjustedDemand;
+             Common.LimitedEnsamble.RandomForest=randomForest.[i];
+             Common.LimitedEnsamble.GLM=glm.[i]})
     |> Seq.toArray
 
-let averageRMSLE =
+let blendedRMSLE =
     ensambles
-    |> Seq.map(fun e -> {CommonFunctions.ExperimentResult.Observed = e.Observed; CommonFunctions.ExperimentResult.Simulated= ((e.RandomForest + e.GLM)/2.0)})
+    |> Seq.map(fun e -> {Common.ExperimentResult.Observed = e.Observed; Common.ExperimentResult.Simulated= ((e.RandomForest + e.GLM)/2.0)})
     |> Seq.toArray
-    |> CommonFunctions.RMSLE
+    |> Common.RMSLE
 
-
+//RF (.66) and GLM (.82) = .67
 

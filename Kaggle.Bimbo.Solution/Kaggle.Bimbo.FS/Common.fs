@@ -1,10 +1,12 @@
 ﻿
 namespace Kaggle.Bimbo
 
-module CommonFunctions = 
+module Common = 
     open System
 
     type ExperimentResult = {Simulated:float; Observed:int}
+    type LimitedEnsamble = {Observed:int; RandomForest:float;GLM:float}
+    type FullEnsamble = {Observed:int; RandomForest:float;GLM:float; NaiveBayes:float; NeuralNetwork:float}
 
     let RMSE (results:ExperimentResult[])=
         results

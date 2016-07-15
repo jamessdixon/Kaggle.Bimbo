@@ -4,19 +4,21 @@ namespace Kaggle.Bimbo
 module GLM = 
     open Accord
     open Accord.Math
-    open CommonFunctions
+    open Common
     open Accord.Statistics.Links
     open Accord.Statistics.Models.Regression
     open Accord.Statistics.Models.Regression.Fitting
 
-    let runGLM (trainItems:List<PrepareData.TrainItem>) (holdOutItems:List<PrepareData.TrainItem>) =
+    let run (trainItems:List<PrepareData.TrainItem>) (holdOutItems:List<PrepareData.TrainItem>) =
         let input = 
             trainItems 
+            |> Seq.filter(fun i -> i.AdjustedDemand < 21)
             |> Seq.map(fun i -> [|i.WeekNumber;i.SalesDepotId; i.SalesChannelId; i.SalesRouteId; i.ClientId; i.ProductId |] |> Array.map float)
             |> Seq.toArray
 
         let output = 
             trainItems
+            |> Seq.filter(fun i -> i.AdjustedDemand < 21)
             |> Seq.map(fun i -> i.AdjustedDemand) 
             |> Seq.toArray
             |> Array.map float
@@ -43,24 +45,3 @@ module GLM =
 
         predicted       
 
-//let trainItems = 
-//    PrepareData.getTrainItems (PrepareData.Random 0.02)   
-//
-//let holdOutItems =
-//    PrepareData.getTrainItems (PrepareData.Random 0.01)
-//
-//let predicted = runGLM trainItems holdOutItems
-//
-//let testOutput =
-//    holdOutItems
-//    |> Seq.map(fun i ->i.AdjustedDemand) 
-//    |> Seq.toArray
-//
-//let rmsle =
-//    Array.zip predicted testOutput
-//    |> Array.map(fun (f,s) -> {Simulated=f;Observed=s})
-//    |> RMSLE
-//rmsle
-//
-//
-//val rmsle : float = 1.234622652

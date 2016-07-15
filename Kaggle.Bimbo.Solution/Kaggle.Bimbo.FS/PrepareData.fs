@@ -14,10 +14,11 @@ module PrepareData =
     type TestItem = {Id: int; WeekNumber:int; SalesDepotId:int; SalesChannelId: int; SalesRouteId: int;
                         ClientId: int; ProductId: int;}
 
+    type RandomSetup = {Percent:float; SeedValue:int}
     type RecordAmount =
     | All
     | Top of int
-    | Random of float
+    | Random of RandomSetup
 
     let getTownStates recordAmount =
         let list = new System.Collections.Generic.List<TownState>()
@@ -47,10 +48,10 @@ module PrepareData =
                 row <- reader.ReadLine()
                 if row <> null then addRow row
         | Random value ->
-            let random = new System.Random()
+            let random = new System.Random(value.SeedValue)
             while not(System.String.IsNullOrEmpty(row)) do
                 row <- reader.ReadLine()
-                if row <> null && (random.NextDouble() < value) then addRow row
+                if row <> null && (random.NextDouble() < value.Percent) then addRow row
         list |> List.ofSeq
 
     open System.Text.RegularExpressions
@@ -101,10 +102,10 @@ module PrepareData =
                 row <- reader.ReadLine()
                 if row <> null then addRow row
         | Random value ->
-            let random = new System.Random()
+            let random = new System.Random(value.SeedValue)
             while not(System.String.IsNullOrEmpty(row)) do
                 row <- reader.ReadLine()
-                if row <> null && (random.NextDouble() < value) then addRow row
+                if row <> null && (random.NextDouble() < value.Percent) then addRow row
         list |> List.ofSeq
 
     let getClients recordAmount =
@@ -127,10 +128,10 @@ module PrepareData =
                 row <- reader.ReadLine()
                 if row <> null then addRow row
         | Random value ->
-            let random = new System.Random()
+            let random = new System.Random(value.SeedValue)
             while not(System.String.IsNullOrEmpty(row)) do
                 row <- reader.ReadLine()
-                if row <> null && (random.NextDouble() < value) then addRow row
+                if row <> null && (random.NextDouble() < value.Percent) then addRow row
         list |> List.ofSeq
 
     let getTrainItems recordAmount =
@@ -164,10 +165,10 @@ module PrepareData =
                 row <- reader.ReadLine()
                 if row <> null then addRow row
         | Random value ->
-            let random = new System.Random()
+            let random = new System.Random(value.SeedValue)
             while not(System.String.IsNullOrEmpty(row)) do
                 row <- reader.ReadLine()
-                if row <> null && (random.NextDouble() < value) then addRow row
+                if row <> null && (random.NextDouble() < value.Percent) then addRow row
         list |> List.ofSeq
 
     let getTestItems recordAmount =
@@ -197,8 +198,8 @@ module PrepareData =
                 row <- reader.ReadLine()
                 if row <> null then addRow row
         | Random value ->
-            let random = new System.Random()
+            let random = new System.Random(value.SeedValue)
             while not(System.String.IsNullOrEmpty(row)) do
                 row <- reader.ReadLine()
-                if row <> null && (random.NextDouble() < value) then addRow row
+                if row <> null && (random.NextDouble() < value.Percent) then addRow row
         list |> List.ofSeq
