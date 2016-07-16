@@ -6,6 +6,7 @@ module Common =
 
     type ExperimentResult = {Simulated:float; Observed:int}
     type LimitedEnsamble = {Observed:int; RandomForest:float;GLM:float}
+    type RoundedEnsamble = {Observed:int; RandomForest:int;GLM:int}
     type FullEnsamble = {Observed:int; RandomForest:float;GLM:float; NaiveBayes:float; NeuralNetwork:float}
 
     let RMSE (results:ExperimentResult[])=

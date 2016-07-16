@@ -13,59 +13,55 @@
 open Kaggle.Bimbo
 
 #time
-let randomForestTrainItems = 
+let trainItems = 
     PrepareData.getTrainItems (PrepareData.Random {Percent=0.02;SeedValue=86})   
 
-let glmTrainItems = 
-    PrepareData.getTrainItems (PrepareData.Random {Percent=0.02;SeedValue=75})   
-
 let holdOutItems =
-    PrepareData.getTrainItems (PrepareData.Random {Percent=0.01;SeedValue=30})
+    PrepareData.getTrainItems (PrepareData.Random {Percent=0.01;SeedValue=75})
 
-let randomForest = RandomForest.run randomForestTrainItems holdOutItems
-let glm = GLM.run glmTrainItems holdOutItems
+let randomForest = RandomForest.run trainItems holdOutItems
+let glm = GLM.run trainItems holdOutItems
 
 let ensambles =
     holdOutItems
     |> Seq.mapi(fun i hoi -> 
             {Common.LimitedEnsamble.Observed=hoi.AdjustedDemand;
              Common.LimitedEnsamble.RandomForest=randomForest.[i];
-             Common.LimitedEnsamble.GLM=glm.[i]})
+             Common.LimitedEnsamble.GLM= glm.[i]})
     |> Seq.toArray
 
-let totalCount = ensambles |> Seq.length //742114
+//ensambles
+//|> Seq.map(fun e -> e.GLM, abs(float e.Observed-e.GLM))
+//|> Seq.filter(fun (v,d) -> d = 2.0 || d = 3.0)
+//|> Seq.groupBy(fun (v,d) -> v)
+//|> Seq.map(fun (v, da) -> v, da |> Seq.length)
+//|> Seq.sortBy(fun (v,a) -> v)
+//|> Seq.iter(fun (v,a) -> printfn "%A, %A" v a)
 
-let foo = 
+let averageExperimentResult =
     ensambles
-    |> Seq.groupBy(fun e -> abs((int e.RandomForest) - e.Observed))
-    |> Seq.map(fun (v,a) -> v, a |> Seq.length)
-    |> Seq.sortBy(fun (k,v) -> k)
-    |> Seq.take(20)
+    |> Seq.map(fun e -> {Common.ExperimentResult.Observed = e.Observed; 
+                         Common.ExperimentResult.Simulated= ((float e.RandomForest + float e.GLM)/2.0)})
+    |> Seq.toArray
 
-let bar = 
+let averageRMSLE =
+    averageExperimentResult
+    |> Common.RMSLE
+
+//RF (.72) and GLM (.82) = .71
+
+let adjustedAverageExperimentResult =
     ensambles
-    |> Seq.groupBy(fun e -> abs((int e.GLM) - e.Observed))
-    |> Seq.map(fun (v,a) -> v, a |> Seq.length)
-    |> Seq.sortBy(fun (k,v) -> k)
-    |> Seq.take(20)
+    |> Seq.map(fun e -> {Common.ExperimentResult.Observed = e.Observed; 
+                         Common.ExperimentResult.Simulated=
+                         if e.RandomForest < 5.0 then
+                            ((float e.RandomForest + float e.GLM)/2.0)
+                         else
+                            e.RandomForest
+                         })
+    |> Seq.toArray
 
-Seq.zip foo bar
-|> Seq.iter(fun (f,s) -> printfn "%A , %A , %A" (fst f) (snd f) (snd s))
-
-Seq.zip foo bar
-|> Seq.iter(fun (f,s) -> printfn "%A" (fst f))
-
-Seq.zip foo bar
-|> Seq.iter(fun (f,s) -> printfn "%A" (snd f))
-
-Seq.zip foo bar
-|> Seq.iter(fun (f,s) -> printfn "%A" (snd s))
-
-//let blendedRMSLE =
-//    ensambles
-//    |> Seq.map(fun e -> {Common.ExperimentResult.Observed = e.Observed; Common.ExperimentResult.Simulated= ((e.RandomForest + e.GLM)/2.0)})
-//    |> Seq.toArray
-//    |> Common.RMSLE
-//
-//RF (.66) and GLM (.82) = .67
+let adjustedAverageRMSLE =
+    averageExperimentResult
+    |> Common.RMSLE
 
