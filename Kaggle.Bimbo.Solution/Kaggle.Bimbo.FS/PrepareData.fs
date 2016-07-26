@@ -3,12 +3,12 @@
 module PrepareData = 
 
     //let basePath = __SOURCE_DIRECTORY__ + @"../../../Data/"
-    let basePath =  @"C:\Git\Kaggle.Bimbo\Data\"
+    let basePath =  @"F:\Git\Kaggle.Bimbo\Data\"
 
     type TownState = {SalesDepotId:int; TownId:int; TownDesc:string; StateDesc:string}
     type Product = {ProductId:int; Brand:string; ShortName:string; Weight:option<float>; Quantity: option<float>}
     type Client = {ClientId:int; ClientDesc:string}
-    type TrainItem = {WeekNumber:int; SalesDepotId:int; SalesChannelId: int; SalesRouteId: int; ClientId: int; ProductId: int;
+    type TrainItem = {Id:int; WeekNumber:int; SalesDepotId:int; SalesChannelId: int; SalesRouteId: int; ClientId: int; ProductId: int;
                         SalesThisWeek:float; ReturnsNextWeek:float; SalesUnitThisWeek:int; ReturnsUnitNextWeek:int;
                         AdjustedDemand:int}
     type TestItem = {Id: int; WeekNumber:int; SalesDepotId:int; SalesChannelId: int; SalesRouteId: int;
@@ -139,7 +139,8 @@ module PrepareData =
         let addRow (row:string) =
             let r = row.Split(',')
             let trainItem =
-                {TrainItem.WeekNumber=(int)r.[0];
+                {TrainItem.Id = 0;
+                TrainItem.WeekNumber=(int)r.[0];
                 SalesDepotId= (int)r.[1];
                 SalesChannelId= (int)r.[2];
                 SalesRouteId= (int)r.[3];
@@ -203,3 +204,18 @@ module PrepareData =
                 row <- reader.ReadLine()
                 if row <> null && (random.NextDouble() < value.Percent) then addRow row
         list |> List.ofSeq
+
+    let convertTestItemIntoTrainItem (testItem:TestItem) =
+        {TrainItem.Id = testItem.Id;
+         TrainItem.WeekNumber=testItem.WeekNumber;
+         SalesDepotId= testItem.SalesDepotId;
+         SalesChannelId= testItem.SalesChannelId;
+         SalesRouteId= testItem.SalesRouteId;
+         ClientId= testItem.ClientId;
+         ProductId= testItem.ProductId;
+         SalesUnitThisWeek = 0;
+         SalesThisWeek = 0.0;
+         ReturnsUnitNextWeek = 0;
+         ReturnsNextWeek = 0.0;
+         AdjustedDemand = 0
+        }
